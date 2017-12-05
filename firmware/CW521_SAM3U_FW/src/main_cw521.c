@@ -99,12 +99,14 @@ int main(void)
 	gpio_configure_pin(PIN_EBI_ADDR_BUS_A17, PIN_EBI_ADDR_BUS_FLAG2);
 	gpio_configure_pin(PIN_EBI_ADDR_BUS_A18, PIN_EBI_ADDR_BUS_FLAG2);
 	gpio_configure_pin(PIN_EBI_ADDR_BUS_A19, PIN_EBI_ADDR_BUS_FLAG2);
-	//gpio_configure_pin(PIN_EBI_ADDR_BUS_A20, PIN_EBI_ADDR_BUS_FLAG2);
+	gpio_configure_pin(PIN_EBI_ADDR_BUS_A20, PIN_EBI_ADDR_BUS_FLAG2);
+	gpio_configure_pin(PIN_EBI_ADDR_BUS_A21, PIN_EBI_ADDR_BUS_FLAG2);
 
 	/* Configure EBI I/O for PSRAM connection */
 	printf("Setting up SRAM Communication\n");
 	
 	/* complete SMC configuration between PSRAM and SMC waveforms. */
+	/*
 	smc_set_setup_timing(SMC, 0, SMC_SETUP_NWE_SETUP(0)
 	| SMC_SETUP_NCS_WR_SETUP(2)
 	| SMC_SETUP_NRD_SETUP(2)
@@ -117,6 +119,21 @@ int main(void)
 	| SMC_CYCLE_NRD_CYCLE(8));
 	smc_set_mode(SMC, 0, SMC_MODE_READ_MODE_NRD_CTRL | SMC_MODE_WRITE_MODE_NWE_CTRL
 	| SMC_MODE_DBW_BIT_16);
+	*/
+	
+		smc_set_setup_timing(SMC, 0, SMC_SETUP_NWE_SETUP(0)
+		| SMC_SETUP_NCS_WR_SETUP(4)
+		| SMC_SETUP_NRD_SETUP(4)
+		| SMC_SETUP_NCS_RD_SETUP(4));
+		smc_set_pulse_timing(SMC, 0, SMC_PULSE_NWE_PULSE(12)
+		| SMC_PULSE_NCS_WR_PULSE(12)
+		| SMC_PULSE_NRD_PULSE(12)
+		| SMC_PULSE_NCS_RD_PULSE(12));
+		smc_set_cycle_timing(SMC, 0, SMC_CYCLE_NWE_CYCLE(16)
+		| SMC_CYCLE_NRD_CYCLE(16));
+		smc_set_mode(SMC, 0, SMC_MODE_READ_MODE_NRD_CTRL | SMC_MODE_WRITE_MODE_NWE_CTRL
+		| SMC_MODE_DBW_BIT_16);
+		
 	/*
 	osc_enable(OSC_MAINCK_XTAL);
 			osc_wait_ready(OSC_MAINCK_XTAL);

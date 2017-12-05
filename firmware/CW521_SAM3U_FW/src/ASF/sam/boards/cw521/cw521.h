@@ -157,7 +157,8 @@
 #define PIN_EBI_ADDR_BUS_A17       PIO_PC23_IDX
 #define PIN_EBI_ADDR_BUS_A18       PIO_PC24_IDX
 #define PIN_EBI_ADDR_BUS_A19       PIO_PC25_IDX
-//#define PIN_EBI_ADDR_BUS_A20       PIO_PC26_IDX
+#define PIN_EBI_ADDR_BUS_A20       PIO_PC26_IDX
+#define PIN_EBI_ADDR_BUS_A21       PIO_PB21_IDX
 
 
 /** EBI NRD pin */

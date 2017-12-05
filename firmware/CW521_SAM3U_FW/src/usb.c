@@ -153,15 +153,17 @@ void ctrl_writemem_ctrl(void){
 }
 
 static uint32_t bulkread_address = 0;
+static uint32_t bulkread_len = 0;
 
 void ctrl_writemem_bulk(void){
-	//uint32_t buflen = *(CTRLBUFFER_WORDPTR);
+	uint32_t buflen = *(CTRLBUFFER_WORDPTR);
 	uint32_t address = *(CTRLBUFFER_WORDPTR + 1);
 	
 	FPGA_setlock(fpga_blockout);
 	
 	/* Set address */
 	bulkread_address = address;
+	bulkread_len = buflen;
 	//FPGA_setaddr(address);
 	
 	/* Transaction done in generic callback */
@@ -317,7 +319,7 @@ void main_vendor_bulk_out_received(udd_ep_status_t status,
 	}
 	
 	if (blockendpoint_usage == bep_emem){
-		for(unsigned int i = 0; i < nb_transfered; i++){
+		for(uint32_t i = 0; i < nb_transfered; i++){
 			xram[i + bulkread_address] = main_buf_loopback[i];
 		}
 		
