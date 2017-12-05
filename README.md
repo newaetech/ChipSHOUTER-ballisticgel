@@ -1,4 +1,4 @@
-#ChipSHOUTER™ Ballistic Gel
+# ChipSHOUTER™ Ballistic Gel
 
 The CW521 is an Electro-Magnetic Fault Injection (EMFI) target. It is specially designed to help you understand fault injection patterns for a given tip.
 
