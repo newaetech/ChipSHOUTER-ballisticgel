@@ -59,6 +59,7 @@ void main_sof_action(void)
 
 bool main_vendor_enable(void)
 {
+	LED_On(LED2_GPIO);
 	main_b_vendor_enable = true;
 	// Start data reception on OUT endpoints
 #if UDI_VENDOR_EPS_SIZE_BULK_FS
@@ -109,6 +110,8 @@ void ctrl_readmem_bulk(void){
 	
 	FPGA_setlock(fpga_blockin);
 	
+	LED_On(LED2_GPIO);
+	
 	/* Do memory read */	
 	udi_vendor_bulk_in_run(
 	(uint8_t *) PSRAM_BASE_ADDRESS + address,
@@ -130,6 +133,7 @@ void ctrl_readmem_ctrl(void){
 	ctrlmemread_size = buflen;
 	
 	/* Start Transaction */
+	LED_On(LED2_GPIO);
 }
 
 void ctrl_writemem_ctrl(void){
@@ -143,6 +147,7 @@ void ctrl_writemem_ctrl(void){
 	FPGA_setlock(fpga_generic);
 	
 	/* Start Transaction */
+	LED_On(LED1_GPIO);
 
 	/* Do memory write */
 	for(unsigned int i = 0; i < buflen; i++){
@@ -167,6 +172,7 @@ void ctrl_writemem_bulk(void){
 	//FPGA_setaddr(address);
 	
 	/* Transaction done in generic callback */
+	LED_On(LED1_GPIO);
 }
 
 static void ctrl_sam3ucfg_cb(void)
@@ -319,6 +325,7 @@ void main_vendor_bulk_out_received(udd_ep_status_t status,
 	}
 	
 	if (blockendpoint_usage == bep_emem){
+		
 		for(uint32_t i = 0; i < nb_transfered; i++){
 			xram[i + bulkread_address] = main_buf_loopback[i];
 		}

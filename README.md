@@ -10,8 +10,18 @@ The GIT repository contains the following:
 
 1) PCB gerber files.
 2) Firmware for the microcontroller.
+3) Python library / PC application.
 
 ## PC Application
+
+The PC application is a simple example of using the Python library. This application does the following (via the library)
+
+1. Downloads a pattern to the SRAM chip.
+2. Waits for fault injection.
+3. Uploads SRAM chip contents & determines corrupt locations.
+4. Graphs map of physical SRAM locations.
+
+The SRAM pattern can be something besides the random pattern, but the random pattern ensures "odd" corruptions (such as shorting address lines etc) will easily be caught.
 
 ## Building Firmware
 
@@ -23,4 +33,4 @@ Ballistic Gel is part of the ChipSHOUTER project (which is itself related to the
 
 Ballistic Gel is an open-source project, and is released with the GPL license. Assembled boards can be purchased from NewAE Technology Inc at https://store.newae.com .
 
-ChipSHOUTER is a trademark of NewAE Technoloy Inc. Note you CANNOT sell boards using the ChipSHOUTER name without permission, and you cannot use NewAE Technology Inc's USB VID.
+ChipSHOUTER is a trademark of NewAE Technoloy Inc. Note you CANNOT sell boards using the ChipSHOUTER name without permission, and you cannot use NewAE Technology Inc's USB VID on your own products as the USB-IF license disallows sub-licensing in this manner. If you change the VID/PID, simply change the associated VID/PID in the .inf (driver) file as needed.

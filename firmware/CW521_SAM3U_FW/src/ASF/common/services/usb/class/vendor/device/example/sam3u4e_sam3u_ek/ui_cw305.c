@@ -70,15 +70,6 @@ void ui_wakeup(void)
 	board_sram_pwron();
 }
 
-void ui_loop_back_state(bool b_started)
-{
-	if (b_started) {
-		LED_On(LED1_GPIO);
-	} else {
-		LED_Off(LED1_GPIO);
-	}
-}
-
 void ui_process(uint16_t framenumber)
 {
 	if ((framenumber % 1000) == 0) {
@@ -86,6 +77,11 @@ void ui_process(uint16_t framenumber)
 	}
 	if ((framenumber % 1000) == 500) {
 		LED_Off(LED0_GPIO);
+	}
+	
+	if ((framenumber % 512) == 0) {
+		LED_Off(LED1_GPIO);
+		LED_Off(LED2_GPIO);
 	}
 	
 	task_tickCnt++;

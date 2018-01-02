@@ -187,20 +187,20 @@
 #define PIN_EBI_NCS0_ATTR PIO_PULLUP
 
 //! LED #0 pin definition
-#define LED_0_NAME    "red LED1"
-#define LED0_GPIO     (PIO_PA16_IDX)
+#define LED_0_NAME    "green LEDHB"
+#define LED0_GPIO     (PIO_PA17_IDX)
 #define LED0_FLAGS    (PIO_TYPE_PIO_OUTPUT_1 | PIO_DEFAULT)
 #define LED0_ACTIVE_LEVEL 1
 
 //! LED #1 pin definition
-#define LED_1_NAME    "red LED2"
-#define LED1_GPIO     (PIO_PC12_IDX)
+#define LED_1_NAME    "red TX"
+#define LED1_GPIO     (PIO_PA16_IDX)
 #define LED1_FLAGS    (PIO_TYPE_PIO_OUTPUT_1 | PIO_DEFAULT)
 #define LED1_ACTIVE_LEVEL 1
 
 //! LED #1 pin definition
-#define LED_2_NAME    "red LED3"
-#define LED2_GPIO     (PIO_PA17_IDX)
+#define LED_2_NAME    "red RX"
+#define LED2_GPIO     (PIO_PC12_IDX)
 #define LED2_FLAGS    (PIO_TYPE_PIO_OUTPUT_1 | PIO_DEFAULT)
 #define LED2_ACTIVE_LEVEL 1
 
