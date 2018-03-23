@@ -43,7 +43,7 @@ class SRAMMapping(object):
         #A9   = X2
         #A10  = X1
         #A16  = X0
-        
+
         x = (((address >> 7) & 0x01) << 12)  | \
             (((address >> 5) & 0x01) << 11)  | \
             (((address >> 2) & 0x01) << 10)  | \
@@ -56,10 +56,10 @@ class SRAMMapping(object):
             (((address >> 8) & 0x01) << 3)   | \
             (((address >> 9) & 0x01) << 2)   | \
             (((address >> 10) & 0x01) << 1)  | \
-            (((address >> 16) & 0x01) << 0)    
+            (((address >> 16) & 0x01) << 0)
 
         return x
-        
+
 
     def address_to_ydecoder(self, address):
         """Given an address, provide ydecoder information"""
@@ -71,7 +71,7 @@ class SRAMMapping(object):
         #A13  = Y2
         #A12  = Y1
         #A11  = Y5
-        
+
         y = (((address >> 20)& 0x01) << 7)   | \
             (((address >> 4) & 0x01) << 6)   | \
             (((address >> 3) & 0x01) << 5)   | \
@@ -79,10 +79,10 @@ class SRAMMapping(object):
             (((address >> 14) & 0x01) << 3)  | \
             (((address >> 13) & 0x01) << 2)  | \
             (((address >> 12) & 0x01) << 1)  | \
-            (((address >> 11) & 0x01) << 0)    
+            (((address >> 11) & 0x01) << 0)
 
         return y
-    
+
 
     def xdecoder_to_wordline(self, x):
         """Go from x decoder to word line number"""
@@ -109,7 +109,7 @@ class SRAMMapping(object):
         #Section defined from Y7Y6Y5
         section = (y >> 5) & 0x07
 
-        #Within section, each of Q0...Q15
+        #Within section, each of Q0...Q15 in
         bitline_start = y & 0x1F
 
         #Each of Q0..Q15
@@ -125,7 +125,7 @@ class SRAMMapping(object):
         bitline_location = [(section * 512) + bitline_location[i] for i in range(0, 16)]
 
         return bitline_location
-        
+
 
     def get_bit_locations(self, address):
         """Go from address to x/y location. The y location is returned as a vector for each of 16 bits"""
@@ -140,10 +140,10 @@ class SRAMMapping(object):
 
     def errorbitlist_to_xyplot(self, errorlist, ax):
         """Convert SAM3U error bit location vector to graph"""
-        
+
         errdatax = []
         errdatay = []
-        
+
         for i in range(0, 2**22, 2):
             err = errorlist[i] | errorlist[i + 1]
             if err > 0:
@@ -156,7 +156,7 @@ class SRAMMapping(object):
                 for bnum in range(0, 16):
                     if err & (1<<bnum):
                         errdatax.append(x)
-                        errdatay.append(ybitarray[bnum])  
+                        errdatay.append(ybitarray[bnum])
 
         ax.plot(errdatax, errdatay, '.r')
         ax.axis([0, 8192, 0, 4096])
@@ -170,7 +170,7 @@ def test():
         data = bytearray(errfile.read())
 
     sram = sram_mapping()
-    
+
     import numpy as np
     import matplotlib.mlab as mlab
     import matplotlib.pyplot as plt
@@ -180,8 +180,8 @@ def test():
     sram.errorbitlist_to_xyplot(data, ax)
     plt.show()
 
-    
+
 if __name__ == "__main__":
     test()
-        
+
 
