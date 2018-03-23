@@ -77,10 +77,13 @@ class CW521(object):
         pload.extend(packuint32(addr))
         self.usb.sendCtrl(0x15, data=pload)
 
-        data = self.usb.readCtrl(0x15, dlen = 1)
+        data = self.usb.readCtrl(0x15, dlen = 4)
+        reported_count = (data[3] << 8) | data[2]
+        reported_count -= 1
         if data[0] == 0:
             return [0] * size
         else:
+            print "Error in block {} ({}) (addr = {}, size = {})".format(addr / size, reported_count, addr, size)
             return self.usb.cmdReadMem(addr, size)
 
     def close(self):
@@ -90,23 +93,6 @@ def packuint32(data):
     """Converts a 32-bit integer into format expected by USB firmware"""
 
     return [data & 0xff, (data >> 8) & 0xff, (data >> 16) & 0xff, (data >> 24) & 0xff]
-
-state = []
-def xorshift128():
-    s = state[3]
-    t = state[3]
-
-    t ^= (t << 11)
-    t ^= (t >> 8)
-
-    state[3] = state[2]
-    state[2] = state[1]
-    s = state[0]
-    state[1] = s
-    t ^= s
-    t ^= s >> 19
-    state[0] = t
-    return t
 
 def get_xor_sram(sram_len):
     data = np.random.randint(0, 256, sram_len)
@@ -122,13 +108,16 @@ def get_xor_sram(sram_len):
 def do_seed_test():
     cw521 = CW521()
     cw521.con()
+    state = []
     for i in range(0, 4):
         state.extend(packuint32(0xFAA2))
 
     print "Writing seed"
     block_size = 8192
     time1 = time.clock()
-    for i in range(cw521.sram_len / block_size):
+
+    # Have to do one extra?
+    for i in range(cw521.sram_len / block_size + 1):
         cw521.write_seed(state, i * block_size, block_size)
     # cw521.write_pattern(data)
     time2 = time.clock()
@@ -149,7 +138,7 @@ def do_seed_test():
 
     time1 = time.clock()
     errorlist = []
-    for i in range(cw521.sram_len / block_size):
+    for i in range(0, cw521.sram_len / block_size):
         errorlist.extend(cw521.read_pattern_rng(i * block_size, block_size))
     # errorlist
     # errorlist = cw521.read_pattern()
@@ -159,15 +148,38 @@ def do_seed_test():
     test_len = cw521.sram_len
     time1 = time.clock()
     byte_errors = 0
-    for i in range(0, test_len):
+    for i in range(0, len(errorlist)):
         if not errorlist[i] == 0:
-            byte_errors = 0;
+            byte_errors += 1;
+
     time2 = time.clock()
     check_time = time2 - time1
 
     print "Byte errors: {}".format(byte_errors)
     print "Write: {}, Read: {}, Check: {}".format(write_time, read_time, check_time)
 
+    sram = srammap.SRAMMapping()
+    errdatax = []
+    errdatay = []
+    pone = False
+    for i in range(0, 2**22, 2):
+        err = errorlist[i] | errorlist[i + 1]
+
+        if err > 0:
+            locs = sram.get_bit_locations(i >> i)
+            x = locs[0]
+            ybitarray = locs[1]
+            for bnum in range(0, 16):
+                if err & (1<<bnum):
+                    errdatax.append(x)
+                    errdatay.append(ybitarray[bnum])
+
+    plt.plot(errdatax, errdatay, '.r')
+    plt.axis([0, 8192, 0, 4096])
+    plt.show()
+
+    with open("error_location.bin", "wb") as errfile:
+        errfile.write(bytearray(errorlist))
     cw521.close()
 
 def do_test():

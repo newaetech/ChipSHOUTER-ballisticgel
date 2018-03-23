@@ -28,13 +28,13 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
-# Target file name (without extension). 
+# Target file name (without extension).
 # This is the base name of the compiled .hex file.
 TARGET = cw521
 
 # List C source files here.
 # Header files (.h) are automatically pulled in.
-SRC += main_cw521.c
+SRC += main_cw521.c usb.c
 
 # -----------------------------------------------------------------------------
 OPT=3
