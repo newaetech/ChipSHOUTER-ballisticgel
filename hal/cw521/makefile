@@ -41,17 +41,6 @@ OPT=3
 
 PLATFORM=CW521
 
-ifeq ($(CRYPTO_TARGET),)
-CRYPTO_TARGET = NONE
-endif
-
-ifeq ($(CRYPTO_OPTIONS),)
-CRYPTO_OPTIONS = AES128C
-endif
-
-#Add simpleserial project to build
-include ../simpleserial/Makefile.simpleserial
-
 FIRMWAREPATH = ../.
 include $(FIRMWAREPATH)/Makefile.inc
 

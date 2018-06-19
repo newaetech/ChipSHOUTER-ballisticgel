@@ -39,7 +39,6 @@ endif
 
 include $(FIRMWAREPATH)/hal/Makefile.hal
 
-include $(FIRMWAREPATH)/crypto/Makefile.crypto
 
 # Add the platform to the output filenames
 TARGET-PLAT = $(TARGET)-$(PLATFORM)
