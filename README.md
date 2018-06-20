@@ -8,7 +8,7 @@ It uses a large SRAM chip as a target, which has a relatively simple layout. Thi
 
 The GIT repository contains the following:
 
-1) PCB gerber files.
+1) PCB gerber files (TODO - not yet uploaded)
 2) Firmware for the microcontroller.
 3) Python library / PC application.
 
@@ -23,13 +23,15 @@ The PC application is a simple example of using the Python library. This applica
 
 The SRAM pattern can be something besides the random pattern, but the random pattern ensures "odd" corruptions (such as shorting address lines etc) will easily be caught.
 
+
+
 ## Building Firmware
 
 The firmware is built using Atmel Studio 7, but could also be built on Linux using an ARM toolchain.
 
 ## Legal
 
-Ballistic Gel is part of the ChipSHOUTER project (which is itself related to the ChipWhisperer project). It is also known as the CW521 target board, as documented at https://wiki.newae.com .
+Ballistic Gel is part of the ChipSHOUTER project (which is itself related to the ChipWhisperer project). It is also known as the CW521 target board.
 
 Ballistic Gel is an open-source project, and is released with the GPL license. Assembled boards can be purchased from NewAE Technology Inc at https://store.newae.com .
 
