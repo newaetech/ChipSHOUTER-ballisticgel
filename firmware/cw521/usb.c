@@ -124,7 +124,8 @@ uint32_t xorshift32(void);
 
 //PSRAM is SMC memory
 static uint8_t buffer[9000];
-static uint16_t found_err[] = {0};
+static uint16_t found_err[] = {0,0};
+	
 volatile static uint8_t rng_done = 0;
 uint8_t testmem_sent_back = 1;
 void ctrl_testmem(void)
@@ -166,10 +167,13 @@ void ctrl_readmem_bulk(void){
      uint32_t buflen = *(CTRLBUFFER_WORDPTR);
      uint32_t address = *(CTRLBUFFER_WORDPTR + 1);
 
-     if (buflen >= sizeof(buffer))
-          return;
      if (seeded) {
-          int i = 0;
+		 seeded = 0;
+		 
+		 //Oops? Can't do that with seeded version
+	     if (buflen >= sizeof(buffer))
+			 return;
+
           LED_On(LED2_GPIO);
 
           udi_vendor_bulk_in_run(

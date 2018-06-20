@@ -1,8 +1,7 @@
 /*
 
- Copyright (C) 2015 NewAE Technology Inc. All Rights Reserved.
+ Copyright (C) 2018 NewAE Technology Inc. All Rights Reserved.
 
- This is the version of the main code for the CW1180 (which has LCD).
 
  */
 

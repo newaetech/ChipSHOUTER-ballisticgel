@@ -41,10 +41,13 @@ include $(FIRMWAREPATH)/hal/Makefile.hal
 
 
 # Add the platform to the output filenames
+ifeq ($(TARGET-PLAT),)
 TARGET-PLAT = $(TARGET)-$(PLATFORM)
+endif
 
 # Also get target names for all platforms (for make clean)
 TARGET-ALL = $(foreach PLAT,$(PLATFORM_LIST), $(TARGET)-$(PLAT))
+
 
 # Object files directory
 #     To put object files in current directory, use a dot (.), do NOT make
@@ -314,7 +317,7 @@ ALL_ASFLAGS = $(MCU_FLAGS) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: clean_objs $(OBJDIR) .dep begin gccversion build sizeafter end
+all: .dep begin gccversion build sizeafter end
 
 # Change the build target to build a HEX file or a library.
 build: elf hex eep lss sym

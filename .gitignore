@@ -1,2 +1,4 @@
 firmware/CW521_SAM3U_FW/Debug/*
 .dep/
+/firmware/cw521/objdir
+/python_example/.idea
