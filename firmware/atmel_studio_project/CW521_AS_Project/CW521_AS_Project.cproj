@@ -172,15 +172,159 @@
       <SubType>compile</SubType>
       <Link>usb.c</Link>
     </Compile>
-    <Compile Include="asf\udi_vendor.c">
+    <Compile Include="..\..\hal\sam3u4e\chipid.c">
       <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\chipid.c</Link>
     </Compile>
-    <Compile Include="asf\ui_cw305.c">
+    <Compile Include="..\..\hal\sam3u4e\circbuffer.c">
       <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\circbuffer.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\cycle_counter.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\cycle_counter.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\efc.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\efc.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\exceptions.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\exceptions.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\flash_efc.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\flash_efc.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\init.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\init.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\interrupt_sam_nvic.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\interrupt_sam_nvic.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\led.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\led.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\pio.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\pio.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\pio_handler.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\pio_handler.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\pmc.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\pmc.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\read.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\read.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\sleep.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\sleep.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\sleepmgr.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\sleepmgr.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\smc.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\smc.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\spi.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\spi.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\startup_sam3u.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\startup_sam3u.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\syscalls.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\syscalls.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\sysclk.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\sysclk.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\system_sam3u.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\system_sam3u.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\tasks.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\tasks.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\tc.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\tc.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\twi.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\twi.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\uart.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\uart.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\udc.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\udc.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\udi_vendor.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\udi_vendor.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\udi_vendor_desc.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\udi_vendor_desc.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\udphs_device.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\udphs_device.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\ui_cw305.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\ui_cw305.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\usart.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\usart.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\usart_serial.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\usart_serial.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\usb_xmem.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\usb_xmem.c</Link>
+    </Compile>
+    <Compile Include="..\..\hal\sam3u4e\write.c">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\write.c</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="asf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\hal\sam3u4e\flash.ld">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\flash.ld</Link>
+    </None>
+    <None Include="..\..\hal\sam3u4e\libarm_cortexM3l_math.a">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\libarm_cortexM3l_math.a</Link>
+    </None>
+    <None Include="..\..\hal\sam3u4e\Makefile.sam3u4e">
+      <SubType>compile</SubType>
+      <Link>CW521_AS_Project\asf\Makefile.sam3u4e</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
