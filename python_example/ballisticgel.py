@@ -12,6 +12,9 @@ import time
 
 class CW521(object):
 
+    REQ_CHECKMEM_RNG = 0x15
+    REQ_MEMWRITE_RNG = 0x14
+
     sram_len = 4194304
 
     def con(self, usb_vid=0x2B3E, usb_pid=0xC305):
@@ -21,7 +24,7 @@ class CW521(object):
 
 
     def write_pattern(self, pattern):
-        """Download an arbitrary pattern to the SRAM"""
+        """Download an arbitrary pattern to the entire SRAM"""
 
         if len(pattern) > self.sram_len:
             raise ValueError("Length of pattern (%d) too long"%(len(pattern)))
@@ -45,16 +48,17 @@ class CW521(object):
                 self.usb.cmdWriteMem(lastendaddr, chunk)
 
     def write_seed(self, seed, addr, length):
+        """Write 'length' random data to 'addr', based on 'seed'"""
         if (len(seed) != 16):
             raise ValueError("Length of seed incorrect {}".format(len(seed)))
         pload = packuint32(length)
         pload.extend(packuint32(addr))
         pload.extend(seed)
-        self.usb.sendCtrl(0x14, data=pload)
+        self.usb.sendCtrl(self.REQ_MEMWRITE_RNG, data=pload)
 
 
     def read_pattern(self, start_addr=0, len_to_read=None):
-        """Read SRAM contents"""
+        """Read a block of data from SRAM."""
 
         if len_to_read is None:
             len_to_read = self.sram_len
@@ -70,16 +74,20 @@ class CW521(object):
         return din
 
     def read_pattern_rng(self, addr, size = 4096):
+        """Read error pattern, assuming it was written using seed previously."""
+        
         if size > 8192:
             raise ValueError("Read pattern too large")
 
         pload = packuint32(size)
         pload.extend(packuint32(addr))
-        self.usb.sendCtrl(0x15, data=pload)
-
-        data = self.usb.readCtrl(0x15, dlen = 4)
+        self.usb.sendCtrl(self.REQ_CHECKMEM_RNG, data=pload)
+        data = self.usb.readCtrl(self.REQ_CHECKMEM_RNG, dlen = 4)
         reported_count = (data[3] << 8) | data[2]
         reported_count -= 1
+        
+        # Check if any errors reported - if not we return a null pattern array without needing to do
+        # USB transfers at all
         if data[0] == 0:
             return [0] * size
         else:
@@ -140,8 +148,6 @@ def do_seed_test():
     errorlist = []
     for i in range(0, cw521.sram_len / block_size):
         errorlist.extend(cw521.read_pattern_rng(i * block_size, block_size))
-    # errorlist
-    # errorlist = cw521.read_pattern()
     time2 = time.clock()
     read_time = time2 - time1
 
@@ -213,21 +219,29 @@ def do_test():
     errorcnt = 0
 
     errorlist = []
+    set_errors = []
+    reset_errors = []
 
     test_len = cw521.sram_len
 
     time1 = time.clock()
     for i in range(0, test_len):
         if data[i] != din[i]:
-            errorlist.append(bin(data[i] ^ din[i]).count('1'))
+            diff = data[i] ^ din[i]
+            errorlist.append(bin(diff).count('1'))
+            set_errors.append(bin(diff & data[i]).count('1'))
+            reset_errors.append(bin(diff & ~data[i]).count('1'))
             errorcnt += 1
         else:
             errorlist.append(0)
     time2 = time.clock()
     check_time = time2 - time1
 
-    print "Errors: %d (of %d)"%(errorcnt, test_len)
-    print "Pattern: {}, Write: {}, Read: {}, Check: {}".format(pattern_time, write_time, read_time, check_time)
+    total_set_errors = sum(set_errors)
+    total_reset_errors = sum(reset_errors)
+
+    print "Byte errors: %d (of %d). Bit errors: %d set (0 --> 1), %d reset (1 --> 0)"%(errorcnt, test_len, total_set_errors, total_reset_errors)
+    print " Timing: pattern: {}, Write: {}, Read: {}, Check: {}".format(pattern_time, write_time, read_time, check_time)
 
     if errorcnt > 0:
         sram = srammap.SRAMMapping()
@@ -261,6 +275,5 @@ def do_test():
 
 while True:
     state = []
-    do_seed_test()
-
-#do_test()
+    #do_seed_test()
+    do_test()
