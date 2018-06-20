@@ -91,6 +91,7 @@ void main_vendor_disable(void)
 #define REQ_MEMWRITE_RNG 0x14
 #define REQ_CHECKMEM_RNG 0x15
 #define REQ_ECHO_SEED 0x16
+#define REQ_MEMREAD_RNG_BULK 0x18
 
 COMPILER_WORD_ALIGNED static uint8_t ctrlbuffer[64];
 #define CTRLBUFFER_WORDPTR ((uint32_t *) ((void *)ctrlbuffer))
@@ -112,6 +113,12 @@ void ctrl_readmem_ctrl(void);
 void ctrl_writemem_bulk(void);
 void ctrl_writemem_ctrl(void);
 void ctrl_progfpga_bulk(void);
+
+void ctrl_echo_seed(void);
+void ctrl_testmem(void);
+
+void ctrl_readmem_rng_bulk(void);
+void ctrl_writemem_rng(void);
 
 uint32_t xorshift128(void);
 uint32_t xorshift32(void);
@@ -159,30 +166,13 @@ void ctrl_testmem(void)
           }
      }
 
-     ctrlmemread_buf = found_err;
+     ctrlmemread_buf = (uint8_t *) found_err;
      ctrlmemread_size = 4;
 }
 
 void ctrl_readmem_bulk(void){
      uint32_t buflen = *(CTRLBUFFER_WORDPTR);
      uint32_t address = *(CTRLBUFFER_WORDPTR + 1);
-
-     if (seeded) {
-		 seeded = 0;
-		 
-		 //Oops? Can't do that with seeded version
-	     if (buflen >= sizeof(buffer))
-			 return;
-
-          LED_On(LED2_GPIO);
-
-          udi_vendor_bulk_in_run(
-               buffer,
-               buflen,
-               main_vendor_bulk_in_received
-               );
-          return;
-     }
 
      FPGA_setlock(fpga_blockin);
 
@@ -194,6 +184,24 @@ void ctrl_readmem_bulk(void){
           buflen,
           main_vendor_bulk_in_received
           );
+}
+
+void ctrl_readmem_rng_bulk(void){
+	uint32_t buflen = *(CTRLBUFFER_WORDPTR);
+	//uint32_t address = *(CTRLBUFFER_WORDPTR + 1);
+		
+	//Oops? Can't do that with seeded version
+	if (buflen >= sizeof(buffer))
+	return;
+
+	LED_On(LED2_GPIO);
+
+	udi_vendor_bulk_in_run(
+		buffer,
+		buflen,
+		main_vendor_bulk_in_received
+	);
+	return;
 }
 
 void ctrl_readmem_ctrl(void){
@@ -365,6 +373,10 @@ bool main_setup_out_received(void)
           udd_g_ctrlreq.callback = ctrl_writemem_ctrl;
           return true;
 
+          /* Memory Read for special seeded version */
+     case REQ_MEMREAD_RNG_BULK:
+          udd_g_ctrlreq.callback = ctrl_readmem_rng_bulk;
+          return true;
 
           /* Misc hardware setup */
      case REQ_SAM3U_CFG:
@@ -404,7 +416,6 @@ bool main_setup_in_received(void)
      */
 
      static uint8_t  respbuf[64];
-     unsigned int cnt;
 
      switch(udd_g_ctrlreq.req.bRequest){
      case REQ_CHECKMEM_RNG:
