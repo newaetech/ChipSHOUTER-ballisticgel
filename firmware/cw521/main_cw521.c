@@ -164,7 +164,6 @@ int main(void)
   // because the USB management is done by interrupt
   while (true) {
     sleepmgr_enter_sleep();
-    process_events();
   }
 }
 

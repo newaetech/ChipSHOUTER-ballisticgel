@@ -83,8 +83,6 @@ void ui_process(uint16_t framenumber)
 		LED_Off(LED1_GPIO);
 		LED_Off(LED2_GPIO);
 	}
-	
-	task_tickCnt++;
 }
 
 /**
