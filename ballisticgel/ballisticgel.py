@@ -1,7 +1,7 @@
 # Copyright (c) 2018, NewAE Technology Inc
 # All rights reserved.
 #
-# Authors: Colin O'Flynn
+# Authors: Colin O'Flynn, Alex Dewar
 #
 # This file is part of the ChipSHOUTER Ballistic Gel project.
 #
@@ -27,7 +27,7 @@ import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
 import srammap
-import chipwhisperer.hardware.naeusb.naeusb as NAE
+import naeusb as NAE
 import time
 
 def packuint32(data):
@@ -135,10 +135,10 @@ class CW521(object):
 
     def get_xor_sram(sram_len):
         data = np.random.randint(0, 256, sram_len)
-        print "Generating xor"
+        print("Generating xor")
         for i in range(sram_len / 4):
             if (not (i % 10000)):
-                print "Done {}".format(i)
+                print("Done {}".format(i))
             rng_val = xorshift128()
             for j in range(4):
                 data[i * 4 + j] = (rng_val >> (8 * j)) & 0xFF
@@ -260,7 +260,7 @@ class CW521(object):
                 set_errors.append(bin(diff & self.data[i]).count('1'))
                 reset_errors.append(bin(diff & ~self.data[i]).count('1'))
                 if bin(diff & ~self.data[i]).count('1') > 8:
-                    print "BULLSHIT"
+                    print("BULLSHIT DETECTED")
                 errorcnt += 1
             else:
                 errorlist.append(0)
@@ -270,7 +270,7 @@ class CW521(object):
         total_set_errors = sum(set_errors)
         total_reset_errors = sum(reset_errors)
 
-        print "Byte errors: %d (of %d). Bit errors: %d set (0 --> 1), %d reset (1 --> 0)"%(errorcnt, test_len, total_set_errors, total_reset_errors)
+        print("Byte errors: %d (of %d). Bit errors: %d set (0 --> 1), %d reset (1 --> 0)"%(errorcnt, test_len, total_set_errors, total_reset_errors))
         #print " Timing: pattern: {}, Write: {}, Read: {}, Check: {}".format(pattern_time, write_time, read_time, check_time)
 
         errdatax = []
@@ -297,6 +297,11 @@ class CW521(object):
         return {'errorlist':errorlist, 'errdatax':errdatax, 'errdatay':errdatay, 'set_errors':set_errors, 'reset_errors':reset_errors}
 
 if __name__ == "__main__":
+
+    print(" CW521 Ballistic Gel Example Script ")
+    print("  by NewAE Technology Inc")
+    print(" This script will continue until you exit with Ctrl-C")
+    
     cw521 = CW521()
     cw521.con()
     
@@ -306,18 +311,27 @@ if __name__ == "__main__":
     
     #Raw method is slower but more flexible
     use_raw_method = True
+
+    print("Settings: ")
+    print("  Using slow (raw) mode  : " + str(use_raw_method))
+    print("  Showing plot of results: " + str(doplot))
+    print("  Results filename       : " + str(savefile))
+
+    print("Starting main loop now: \n")
     
     while True:
         try:        
             if use_raw_method:
-                print "Writing data..."
+                print("LOOP START: Writing data to SRAM...")
                 cw521.raw_test_setup()
-                raw_input("Hit enter when glitch inserted")
+                raw_input(" Hit enter when glitch inserted")
+                print(" Reading SRAM data...")
                 results = cw521.raw_test_compare()
             else:
-                print "Writing data..."
+                print("LOOP START: Writing data to SRAM...")
                 cw521.seed_test_setup()
-                raw_input("Hit enter when glitch inserted")
+                raw_input(" Hit enter when glitch inserted")
+                print(" Reading SRAM data...")
                 results = cw521.seed_test_compare()
             
             errdatay = results['errdatay']
@@ -332,6 +346,9 @@ if __name__ == "__main__":
             if savefile:
                 with open(savefile, "wb") as errfile:
                     errfile.write(bytearray(errorlist))
+
+            print("")
+        
         except:
             cw521.close()
             raise
