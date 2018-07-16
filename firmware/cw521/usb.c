@@ -333,15 +333,19 @@ static void ctrl_sam3ucfg_cb(void)
           break;
 
           /* Jump to ROM-resident bootloader */
-     case 0x03:
-          /* Turn off connected stuff */
-
-          /* Disconnect USB (will kill stuff) */
-
-          /* Make the jump */
-          break;
-
-          /* Oh well, sucks to be you */
+	case 0x03:	
+		/* Clear ROM-mapping bit. */
+		efc_perform_command(EFC0, EFC_FCMD_CGPB, 1);
+		
+		/* Disconnect USB (will kill connection) */
+		udc_detach();
+		
+		/* With knowledge that I will rise again, I lay down my life. */
+		while (RSTC->RSTC_SR & RSTC_SR_SRCMP);
+		RSTC->RSTC_CR |= RSTC_CR_KEY(0xA5) | RSTC_CR_PERRST | RSTC_CR_PROCRST;
+		while(1);
+		break;
+		
      default:
           break;
      }
