@@ -4,11 +4,13 @@ The CW521 is an Electro-Magnetic Fault Injection (EMFI) target. It is specially 
 
 It uses a large SRAM chip as a target, which has a relatively simple layout. This lets you understand how much of a given chip you are corrupting.
 
+![](cw520_photo.jpg)
+
 ## GIT Layout
 
 The GIT repository contains the following:
 
-1) PCB gerber files (TODO - not yet uploaded)
+1) PCB gerber files (TODO)
 2) Firmware for the microcontroller.
 3) Python library / PC application.
 
@@ -19,11 +21,59 @@ The PC application is a simple example of using the Python library. This applica
 1. Downloads a pattern to the SRAM chip.
 2. Waits for fault injection.
 3. Uploads SRAM chip contents & determines corrupt locations.
-4. Graphs map of physical SRAM locations.
+4. Graphs map of physical SRAM locations (NB: not yet fully working).
 
 The SRAM pattern can be something besides the random pattern, but the random pattern ensures "odd" corruptions (such as shorting address lines etc) will easily be caught.
 
+An example of using the file is given at the end of ballisticgel.py, see the following:
 
+	cw521 = CW521()
+    cw521.con()
+    
+    doplot = False
+    savefile = None
+    #savefile = 'error_locations.bin' 
+    
+    #Raw method is slower but more flexible
+    use_raw_method = True
+
+    while True:
+        try:        
+            if use_raw_method:
+                print "Writing data..."
+                cw521.raw_test_setup()
+                raw_input("Hit enter when glitch inserted")
+                results = cw521.raw_test_compare()
+            else:
+                print "Writing data..."
+                cw521.seed_test_setup()
+                raw_input("Hit enter when glitch inserted")
+                results = cw521.seed_test_compare()
+            
+            errdatay = results['errdatay']
+            errdatax = results['errdatax']
+            errorlist = results['errorlist']
+            
+            if doplot:
+                plt.plot(errdatax, errdatay, '.r')
+                plt.axis([0, 8192, 0, 4096])
+                plt.show()
+
+            if savefile:
+                with open(savefile, "wb") as errfile:
+                    errfile.write(bytearray(errorlist))
+        except:
+            cw521.close()
+
+The "graph" that pops up afterwards is slightly bogus - the physical map of the SRAM is not yet accurate. But the most interesting aspect is that you can see number of bit flips (positive/negative), and total number of bytes corrupted.
+
+You can switch to the faster method as well which does not provide bit corruption information. But it provides total corruption size which is often of great interest.
+
+Ballistic Gel relies on ChipWhisperer being installed, as the USB routines are imported from ChipWhisperer. You can install it with
+
+	pip install chipwhisperer
+
+If you do not have it.
 
 ## Building Firmware
 

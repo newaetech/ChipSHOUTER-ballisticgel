@@ -44,7 +44,8 @@ class CW521(object):
 
     sram_len = 4194304
 
-    def con(self, usb_vid=0x2B3E, usb_pid=0xC305):
+    def con(self, usb_vid=0x2B3E, usb_pid=0xC521):
+        """Connect to the Ballistic Gel, use default VID/PID"""
 
         self.usb = NAE.NAEUSB()
         self.usb.con(idProduct=[usb_pid])
@@ -75,7 +76,9 @@ class CW521(object):
                 self.usb.cmdWriteMem(lastendaddr, chunk)
 
     def write_seed(self, seed, addr, length):
-        """Write 'length' random data to 'addr', based on 'seed'"""
+        """Write 'length' random data to 'addr', based on 'seed', done on-board
+        the CW521 so faster than downloading a specific pattern.
+        """
         if (len(seed) != 16):
             raise ValueError("Length of seed incorrect {}".format(len(seed)))
         pload = packuint32(length)
@@ -142,7 +145,9 @@ class CW521(object):
         return data
                
     def seed_test_setup(self, seed=0xFAA2):
-        """Setup the SRAM using a seed, target pattern generation is done on-device"""
+        """Setup the SRAM using a seed, target pattern generation is done on-device.
+        After a fault is inserted, call seed_test_compare() to find fault numbers and
+        locations."""
     
         state = []
         for i in range(0, 4):
@@ -168,6 +173,7 @@ class CW521(object):
         
         
     def seed_test_compare(self):
+        """Test the SRAM for faults, assuming it was previously setup with seed_test_setup()"""
 
         time1 = time.clock()
         errorlist = []
@@ -209,6 +215,9 @@ class CW521(object):
         return {'errorlist':errorlist, 'errdatax':errdatax, 'errdatay':errdatay}
 
     def raw_test_setup(self):
+        """Download a raw pattern to the SRAM, slower than the seed method but
+        allows arbitrary patterns. After inserting a fault test the pattern with
+        raw_test_compare()"""
 
         #Generate random test vector (so when re-run know if write was working)
         #print "Generating test vector %d bytes"%cw521.sram_len
@@ -227,6 +236,8 @@ class CW521(object):
         return
         
     def raw_test_compare(self):
+        """Check the SRAM for faults based on a raw pattern previously downloaded
+        with raw_test_setup()"""
 
         time1 = time.clock()
         din = cw521.read_pattern()
