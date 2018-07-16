@@ -1,6 +1,20 @@
 /*
-
  Copyright (C) 2018 NewAE Technology Inc. All Rights Reserved.
+
+  This file is part of the CW522 Ballistic Gel Project.
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
  */
@@ -51,7 +65,7 @@ int main(void)
   }
   usb_serial_number[32] = 0;
 
-  printf("ChipSHOUTER CW321 Ballistic Gel Online. Firmware build: %s/%s\n", __TIME__, __DATE__);
+  printf("ChipSHOUTER C521 Ballistic Gel Online. Firmware build: %s/%s\n", __TIME__, __DATE__);
   printf("Serial number: %s\n", usb_serial_number);
 
 
@@ -144,13 +158,6 @@ int main(void)
   // Start USB stack to authorize VBus monitoring
   udc_start();
 
-  /* Enable PCLK0 at 96 MHz */
-  //genclk_enable_config(GENCLK_PCK_0, GENCLK_PCK_SRC_MCK, GENCLK_PCK_PRES_1);
-  //genclk_enable_config(GENCLK_PCK_1, GENCLK_PCK_SRC_MCK, GENCLK_PCK_PRES_1);
-
-  //Following is 60MHz version
-  //genclk_enable_config(GENCLK_PCK_0, GENCLK_PCK_SRC_PLLBCK, GENCLK_PCK_PRES_4);
-
   printf("Event Loop Entered, waiting...\n");
 
   // The main loop manages only the power mode
@@ -175,20 +182,3 @@ static void configure_console(void)
   sysclk_enable_peripheral_clock(CONSOLE_UART_ID);
   stdio_serial_init(CONF_UART, &uart_serial_options);
 }
-
-#define ADDR_STATUS  2
-#define ADDR_ECHO    4
-#define ADDR_EXTFREQ 5
-#define ADDR_ADVCLK  6
-#define ADDR_SYSFREQ 7
-#define ADDR_ADCFREQ 8
-
-/*
-Regular FPGA task to check status and print to LCD screen.
-*/
-void do_task(void)
-{
-  ;
-}
-
-

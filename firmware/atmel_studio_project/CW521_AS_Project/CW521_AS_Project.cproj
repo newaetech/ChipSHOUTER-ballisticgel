@@ -30,15 +30,15 @@
     <EraseKey />
     <AsfFrameworkConfig>
       <framework-data xmlns="">
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.35.1" />
-  </dependencies>
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.35.1" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
     <avrtoolserialnumber>J41800035206</avrtoolserialnumber>
@@ -256,10 +256,6 @@
       <SubType>compile</SubType>
       <Link>CW521_AS_Project\asf\system_sam3u.c</Link>
     </Compile>
-    <Compile Include="..\..\hal\sam3u4e\tasks.c">
-      <SubType>compile</SubType>
-      <Link>CW521_AS_Project\asf\tasks.c</Link>
-    </Compile>
     <Compile Include="..\..\hal\sam3u4e\tc.c">
       <SubType>compile</SubType>
       <Link>CW521_AS_Project\asf\tc.c</Link>
@@ -311,6 +307,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="asf" />
+    <Folder Include="CW521_AS_Project\" />
+    <Folder Include="CW521_AS_Project\asf\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\hal\sam3u4e\flash.ld">

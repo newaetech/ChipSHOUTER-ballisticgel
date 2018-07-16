@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2014-2015 NewAE Technology Inc. All rights reserved.
+  Copyright (c) 2014-2018 NewAE Technology Inc. All rights reserved.
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
 #include <string.h>
 #include <stdint.h>
 
-#define FW_VER_MAJOR 0
-#define FW_VER_MINOR 10
+#define FW_VER_MAJOR 1
+#define FW_VER_MINOR 0
 #define FW_VER_DEBUG 0
 
 volatile bool g_captureinprogress = true;
