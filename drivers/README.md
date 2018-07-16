@@ -3,23 +3,23 @@
 ## Linux ##
 
  - Make a file called /etc/udev/rules.d/99-newae.rules . The contents of this file should be:
-
-	
-	#allow users to claim the device
+    ```
+    #allow users to claim the device
     SUBSYSTEM=="usb", ATTRS{idVendor}=="2b3e", ATTRS{idProduct}=="ace1", MODE="0664", GROUP="plugdev"
     SUBSYSTEM=="usb", ATTRS{idVendor}=="2b3e", ATTRS{idProduct}=="ace2", MODE="0664", GROUP="plugdev" #CW-Lite
     SUBSYSTEM=="usb", ATTRS{idVendor}=="2b3e", ATTRS{idProduct}=="ace3", MODE="0664", GROUP="plugdev" #CW1200
     SUBSYSTEM=="usb", ATTRS{idVendor}=="2b3e", ATTRS{idProduct}=="c305", MODE="0664", GROUP="plugdev" #CW305 FPGA Target
     SUBSYSTEM=="usb", ATTRS{idVendor}=="2b3e", ATTRS{idProduct}=="c000", MODE="0664", GROUP="plugdev" #FTDI-Based JTAG Programmer
     SUBSYSTEM=="usb", ATTRS{idVendor}=="2b3e", ATTRS{idProduct}=="c521", MODE="0664", GROUP="plugdev" #CW521 Ballistic Gel
-
+    ```
  - Add your username to the plugdev group:
-
-	$ sudo usermod -a -G plugdev YOUR-USERNAME
-
+    ```
+    $ sudo usermod -a -G plugdev YOUR-USERNAME
+    ```
  - And reset the udev system:
-
-	$ sudo udevadm control --reload-rules
+    ```
+    $ sudo udevadm control --reload-rules
+    ```
 
  - Finally log out & in again for the group change to take effect.
 
