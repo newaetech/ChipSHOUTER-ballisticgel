@@ -1,8 +1,10 @@
 #
-# This file is Copyright (C) NewAE Technology Inc., 2017. All Rights Reserved.
+# This file is Copyright (C) NewAE Technology Inc., 2017-2018. All Rights Reserved.
 #
 # Used to decode error/addressing information on the Ballistic Gel board target,
-# the AS6C3216 SRAM chip.#
+# the AS6C3216 SRAM chip. This was based on information for the AS6C3216, NOT the
+# AS6C3216A used on the board. They seem to differ based on fault mapping, so work
+# to improve this is ongoing...
 #
 # This file is part of Ballistic Gel
 #

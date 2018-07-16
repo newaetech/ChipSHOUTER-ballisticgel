@@ -6,7 +6,7 @@ It uses a large SRAM chip as a target, which has a relatively simple layout. Thi
 
 ![](cw520_photo.jpg)
 
-## GIT Layout
+## GIT Layout ##
 
 The GIT repository contains the following:
 
@@ -14,7 +14,7 @@ The GIT repository contains the following:
 2) Firmware for the microcontroller.
 3) Python library / PC application.
 
-## PC Application
+## PC Application ##
 
 The PC application is a simple example of using the Python library. This application does the following (via the library)
 
@@ -75,11 +75,23 @@ Ballistic Gel relies on ChipWhisperer being installed, as the USB routines are i
 
 If you do not have it.
 
-## Building Firmware
+### Result Format ###
+
+The result information is provided in a dictionary. Depending if you use the fast (but less detailed) method or the slow (but more detailed) method you may not have all of these fields. It currently provides you with this:
+
+ - 'errorlist': A list of addresses of each byte error. The length of this is the number of byte errors.
+ - 'errdatax', 'errdatay': errdatax & errdatay attempt to provide a map of locations on SRAM chip where errors occurred. Until mapping is complete this is not fully accurate.
+ - 'set_errors': Number of bit-set errors that occurred. Note number of bit errors is different from number of byte errors.
+ - 'reset_errors': Number of bit-reset errors that occurred. Note number of bit errors is different from number of byte errors.
+
+
+
+
+## Building Firmware ##
 
 The firmware is built using Atmel Studio 7, but could also be built on Linux using an ARM toolchain.
 
-## Legal
+## Legal ##
 
 Ballistic Gel is part of the ChipSHOUTER project (which is itself related to the ChipWhisperer project). It is also known as the CW521 target board.
 
