@@ -310,7 +310,7 @@ if __name__ == "__main__":
     #savefile = 'error_locations.bin' 
     
     #Raw method is slower but more flexible
-    use_raw_method = True
+    use_raw_method = False
 
     print("Settings: ")
     print("  Using slow (raw) mode  : " + str(use_raw_method))
