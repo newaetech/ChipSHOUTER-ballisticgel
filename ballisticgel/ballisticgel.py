@@ -157,17 +157,17 @@ class CW521(object):
         #time1 = time.clock()
 
         # Have to do one extra?
-        for i in range(int(cw521.sram_len / self.block_size) + 1):
-            cw521.write_seed(state, i * self.block_size, self.block_size)
-        # cw521.write_pattern(data)
+        for i in range(int(self.sram_len / self.block_size) + 1):
+            self.write_seed(state, i * self.block_size, self.block_size)
+        # self.write_pattern(data)
         #time2 = time.clock()
         #write_time = time2 - time1
 
         #Generate random test vector (so when re-run know if write was working)
-        # print "Generating test vector %d bytes"%cw521.sram_len
+        # print "Generating test vector %d bytes"%self.sram_len
 
         # time1 = time.clock()
-        # data = get_xor_sram(cw521.sram_len)
+        # data = get_xor_sram(self.sram_len)
         # time2 = time.clock()
         # pattern_time = time2 - time1
         
@@ -177,12 +177,12 @@ class CW521(object):
 
         #time1 = time.clock()
         errorlist = []
-        for i in range(0, int(cw521.sram_len / self.block_size)):
-            errorlist.extend(cw521.read_pattern_rng(i * self.block_size, self.block_size))
+        for i in range(0, int(self.sram_len / self.block_size)):
+            errorlist.extend(self.read_pattern_rng(i * self.block_size, self.block_size))
         #time2 = time.clock()
         #read_time = time2 - time1
 
-        test_len = cw521.sram_len
+        test_len = self.sram_len
         #time1 = time.clock()
         byte_errors = 0
         for i in range(0, len(errorlist)):
@@ -220,16 +220,16 @@ class CW521(object):
         raw_test_compare()"""
 
         #Generate random test vector (so when re-run know if write was working)
-        #print "Generating test vector %d bytes"%cw521.sram_len
+        #print "Generating test vector %d bytes"%self.sram_len
 
         #time1 = time.clock()
-        self.data = np.random.randint(0, 256, cw521.sram_len)
+        self.data = np.random.randint(0, 256, self.sram_len)
         #time2 = time.clock()
         #pattern_time = time2 - time1
 
         #print "Writing..."
         #time1 = time.clock()
-        cw521.write_pattern(self.data)
+        self.write_pattern(self.data)
         #time2 = time.clock()
         #write_time = time2 - time1
 
@@ -240,7 +240,7 @@ class CW521(object):
         with raw_test_setup()"""
 
         #time1 = time.clock()
-        din = cw521.read_pattern()
+        din = self.read_pattern()
         #time2 = time.clock()
         #read_time = time2 - time1
 
@@ -250,7 +250,7 @@ class CW521(object):
         set_errors = []
         reset_errors = []
 
-        test_len = cw521.sram_len
+        test_len = self.sram_len
 
         #time1 = time.clock()
         for i in range(0, test_len):
