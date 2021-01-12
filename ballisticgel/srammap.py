@@ -1,5 +1,5 @@
 #
-# This file is Copyright (C) NewAE Technology Inc., 2017-2018. All Rights Reserved.
+# This file is Copyright (C) NewAE Technology Inc., 2017-2019. All Rights Reserved.
 #
 # Used to decode error/addressing information on the Ballistic Gel board target,
 # the AS6C3216 SRAM chip. This was based on information for the AS6C3216, NOT the
@@ -28,10 +28,10 @@
 #
 
 class SRAMMapping(object):
-    """Provides mapping of AS6C3216 address to physical layout"""
+    """Provides mapping of AS6C3216A address to physical layout"""
 
     def address_to_xdecoder(self, address):
-        """Given an address, provide xdecoder information"""
+        """Given an address, provide xdecoder information (for AS6C3216A)"""
         #A7   = X12
         #A5   = X11
         #A2   = X10
@@ -46,25 +46,43 @@ class SRAMMapping(object):
         #A10  = X1
         #A16  = X0
 
-        x = (((address >> 7) & 0x01) << 12)  | \
-            (((address >> 5) & 0x01) << 11)  | \
-            (((address >> 2) & 0x01) << 10)  | \
-            (((address >> 1) & 0x01) << 9)   | \
-            (((address >> 0) & 0x01) << 8)   | \
-            (((address >> 19) & 0x01) << 7)  | \
-            (((address >> 17) & 0x01) << 6)  | \
-            (((address >> 18) & 0x01) << 5)  | \
-            (((address >> 6) & 0x01) << 4)   | \
-            (((address >> 8) & 0x01) << 3)   | \
-            (((address >> 9) & 0x01) << 2)   | \
-            (((address >> 10) & 0x01) << 1)  | \
+        x = (((address >> 7)  & 0x01) << 12)  | \
+            (((address >> 5)  & 0x01) << 11)  | \
+            (((address >> 2)  & 0x01) << 10)  | \
+            (((address >> 1)  & 0x01) << 9)   | \
+            (((address >> 0)  & 0x01) << 8)   | \
+            (((address >> 19) & 0x01) << 7)   | \
+            (((address >> 17) & 0x01) << 6)   | \
+            (((address >> 18) & 0x01) << 5)   | \
+            (((address >> 6)  & 0x01) << 4)   | \
+            (((address >> 8)  & 0x01) << 3)   | \
+            (((address >> 9)  & 0x01) << 2)   | \
+            (((address >> 10) & 0x01) << 1)   | \
             (((address >> 16) & 0x01) << 0)
 
         return x
 
 
+    def address_to_xdecoder_AS6C3216(self, address):
+        """Given an address, provide xdecoder information (for AS6C3216 - old version of SRAM array)"""
+        x = (((address >> 20) & 0x01) << 12)  | \
+            (((address >> 0)  & 0x01) << 11)  | \
+            (((address >> 1)  & 0x01) << 10)  | \
+            (((address >> 2)  & 0x01) << 9)   | \
+            (((address >> 3)  & 0x01) << 8)   | \
+            (((address >> 4)  & 0x01) << 7)   | \
+            (((address >> 5)  & 0x01) << 6)   | \
+            (((address >> 6)  & 0x01) << 5)   | \
+            (((address >> 7)  & 0x01) << 4)   | \
+            (((address >> 17) & 0x01) << 3)   | \
+            (((address >> 18) & 0x01) << 2)   | \
+            (((address >> 19) & 0x01) << 1)   | \
+            (((address >> 8)  & 0x01) << 0)
+
+        return x
+
     def address_to_ydecoder(self, address):
-        """Given an address, provide ydecoder information"""
+        """Given an address, provide ydecoder information (for AS6C3216A)"""
         #A20  = Y7
         #A4   = Y6
         #A3   = Y5
@@ -72,11 +90,11 @@ class SRAMMapping(object):
         #A14  = Y3
         #A13  = Y2
         #A12  = Y1
-        #A11  = Y5
+        #A11  = Y0
 
-        y = (((address >> 20)& 0x01) << 7)   | \
-            (((address >> 4) & 0x01) << 6)   | \
-            (((address >> 3) & 0x01) << 5)   | \
+        y = (((address >> 20) & 0x01) << 7)  | \
+            (((address >> 4)  & 0x01) << 6)  | \
+            (((address >> 3)  & 0x01) << 5)  | \
             (((address >> 15) & 0x01) << 4)  | \
             (((address >> 14) & 0x01) << 3)  | \
             (((address >> 13) & 0x01) << 2)  | \
@@ -84,8 +102,21 @@ class SRAMMapping(object):
             (((address >> 11) & 0x01) << 0)
 
         return y
+   
+    def address_to_ydecoder_AS6C3216(self, address):
+        """Given an address, provide ydecoder information (for AS6C3216 - old version of chip)"""
+        y = (((address >> 9)  & 0x01) << 7)  | \
+            (((address >> 10) & 0x01) << 6)  | \
+            (((address >> 11) & 0x01) << 5)  | \
+            (((address >> 12) & 0x01) << 4)  | \
+            (((address >> 13) & 0x01) << 3)  | \
+            (((address >> 14) & 0x01) << 2)  | \
+            (((address >> 15) & 0x01) << 1)  | \
+            (((address >> 16) & 0x01) << 0)
 
-
+        return y
+   
+   
     def xdecoder_to_wordline(self, x):
         """Go from x decoder to word line number"""
 

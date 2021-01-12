@@ -1,4 +1,4 @@
-# Copyright (c) 2018, NewAE Technology Inc
+# Copyright (c) 2018-2019, NewAE Technology Inc
 # All rights reserved.
 #
 # Authors: Colin O'Flynn, Alex Dewar
@@ -154,20 +154,20 @@ class CW521(object):
             state.extend(packuint32(seed))
             
         self.block_size = 8192
-        time1 = time.clock()
+        #time1 = time.clock()
 
         # Have to do one extra?
-        for i in range(cw521.sram_len / self.block_size + 1):
-            cw521.write_seed(state, i * self.block_size, self.block_size)
-        # cw521.write_pattern(data)
-        time2 = time.clock()
-        write_time = time2 - time1
+        for i in range(int(self.sram_len / self.block_size) + 1):
+            self.write_seed(state, i * self.block_size, self.block_size)
+        # self.write_pattern(data)
+        #time2 = time.clock()
+        #write_time = time2 - time1
 
         #Generate random test vector (so when re-run know if write was working)
-        # print "Generating test vector %d bytes"%cw521.sram_len
+        # print "Generating test vector %d bytes"%self.sram_len
 
         # time1 = time.clock()
-        # data = get_xor_sram(cw521.sram_len)
+        # data = get_xor_sram(self.sram_len)
         # time2 = time.clock()
         # pattern_time = time2 - time1
         
@@ -175,24 +175,24 @@ class CW521(object):
     def seed_test_compare(self):
         """Test the SRAM for faults, assuming it was previously setup with seed_test_setup()"""
 
-        time1 = time.clock()
+        #time1 = time.clock()
         errorlist = []
-        for i in range(0, cw521.sram_len / self.block_size):
-            errorlist.extend(cw521.read_pattern_rng(i * self.block_size, self.block_size))
-        time2 = time.clock()
-        read_time = time2 - time1
+        for i in range(0, int(self.sram_len / self.block_size)):
+            errorlist.extend(self.read_pattern_rng(i * self.block_size, self.block_size))
+        #time2 = time.clock()
+        #read_time = time2 - time1
 
-        test_len = cw521.sram_len
-        time1 = time.clock()
+        test_len = self.sram_len
+        #time1 = time.clock()
         byte_errors = 0
         for i in range(0, len(errorlist)):
             if not errorlist[i] == 0:
-                byte_errors += 1;
+                byte_errors += 1
 
-        time2 = time.clock()
-        check_time = time2 - time1
+        #time2 = time.clock()
+        #check_time = time2 - time1
 
-        print "Byte errors: {}".format(byte_errors)
+        print("Byte errors: {}".format(byte_errors))
         #print "Write: {}, Read: {}, Check: {}".format(write_time, read_time, check_time)
 
         #print "Getting actual glitch locations in SRAM"
@@ -220,18 +220,18 @@ class CW521(object):
         raw_test_compare()"""
 
         #Generate random test vector (so when re-run know if write was working)
-        #print "Generating test vector %d bytes"%cw521.sram_len
+        #print "Generating test vector %d bytes"%self.sram_len
 
-        time1 = time.clock()
-        self.data = np.random.randint(0, 256, cw521.sram_len)
-        time2 = time.clock()
-        pattern_time = time2 - time1
+        #time1 = time.clock()
+        self.data = np.random.randint(0, 256, self.sram_len)
+        #time2 = time.clock()
+        #pattern_time = time2 - time1
 
         #print "Writing..."
-        time1 = time.clock()
-        cw521.write_pattern(self.data)
-        time2 = time.clock()
-        write_time = time2 - time1
+        #time1 = time.clock()
+        self.write_pattern(self.data)
+        #time2 = time.clock()
+        #write_time = time2 - time1
 
         return
         
@@ -239,10 +239,10 @@ class CW521(object):
         """Check the SRAM for faults based on a raw pattern previously downloaded
         with raw_test_setup()"""
 
-        time1 = time.clock()
-        din = cw521.read_pattern()
-        time2 = time.clock()
-        read_time = time2 - time1
+        #time1 = time.clock()
+        din = self.read_pattern()
+        #time2 = time.clock()
+        #read_time = time2 - time1
 
         errorcnt = 0
 
@@ -250,9 +250,9 @@ class CW521(object):
         set_errors = []
         reset_errors = []
 
-        test_len = cw521.sram_len
+        test_len = self.sram_len
 
-        time1 = time.clock()
+        #time1 = time.clock()
         for i in range(0, test_len):
             if self.data[i] != din[i]:
                 diff = self.data[i] ^ din[i]
@@ -264,8 +264,8 @@ class CW521(object):
                 errorcnt += 1
             else:
                 errorlist.append(0)
-        time2 = time.clock()
-        check_time = time2 - time1
+        #time2 = time.clock()
+        #check_time = time2 - time1
 
         total_set_errors = sum(set_errors)
         total_reset_errors = sum(reset_errors)
@@ -310,7 +310,7 @@ if __name__ == "__main__":
     #savefile = 'error_locations.bin' 
     
     #Raw method is slower but more flexible
-    use_raw_method = True
+    use_raw_method = False
 
     print("Settings: ")
     print("  Using slow (raw) mode  : " + str(use_raw_method))
@@ -324,13 +324,13 @@ if __name__ == "__main__":
             if use_raw_method:
                 print("LOOP START: Writing data to SRAM...")
                 cw521.raw_test_setup()
-                raw_input(" Hit enter when glitch inserted")
+                input(" Hit enter when glitch inserted")
                 print(" Reading SRAM data...")
                 results = cw521.raw_test_compare()
             else:
                 print("LOOP START: Writing data to SRAM...")
                 cw521.seed_test_setup()
-                raw_input(" Hit enter when glitch inserted")
+                input(" Hit enter when glitch inserted")
                 print(" Reading SRAM data...")
                 results = cw521.seed_test_compare()
             
