@@ -308,7 +308,7 @@ void main_vendor_bulk_out_received(udd_ep_status_t status,
      if (blockendpoint_usage == bep_emem){
 
           for(uint32_t i = 0; i < nb_transfered; i++){
-               xram[i + bulkread_address] = main_buf_loopback[i];
+               xram[bulkread_address++] = main_buf_loopback[i];
           }
 
           if (FPGA_lockstatus() == fpga_blockout){

@@ -59,6 +59,8 @@ class CW521(object):
         #Break into 1024 chunks on write - required to avoid buffer overflow!
         totalsent = 0
         chunksize = 1024
+        self.usb.cmdWriteMem(0, pattern)
+        return
         if len(pattern) < chunksize:
             self.usb.cmdWriteMem(0, pattern)
             totalsent += len(pattern)
@@ -132,7 +134,7 @@ class CW521(object):
         self.usb.close()
 
 
-    def get_xor_sram(sram_len):
+    def get_xor_sram(self, sram_len):
         data = np.random.randint(0, 256, sram_len)
         print("Generating xor")
         for i in range(sram_len / 4):
@@ -222,7 +224,7 @@ class CW521(object):
         #print "Generating test vector %d bytes"%self.sram_len
 
         #time1 = time.clock()
-        self.data = np.random.randint(0, 256, self.sram_len)
+        self.data = np.random.randint(0, 256, self.sram_len, dtype=np.uint8)
         #time2 = time.clock()
         #pattern_time = time2 - time1
 
@@ -240,6 +242,7 @@ class CW521(object):
 
         #time1 = time.clock()
         din = self.read_pattern()
+        din = np.array(din, dtype=np.uint8)
         #time2 = time.clock()
         #read_time = time2 - time1
 
@@ -252,22 +255,35 @@ class CW521(object):
         test_len = self.sram_len
 
         #time1 = time.clock()
-        for i in range(0, test_len):
-            if self.data[i] != din[i]:
-                diff = self.data[i] ^ din[i]
-                errorlist.append(bin(diff).count('1'))
-                set_errors.append(bin(diff & self.data[i]).count('1'))
-                reset_errors.append(bin(diff & ~self.data[i]).count('1'))
-                if bin(diff & ~self.data[i]).count('1') > 8:
-                    print("BULLSHIT DETECTED")
-                errorcnt += 1
-            else:
-                errorlist.append(0)
+        diff_list = self.data ^ din
+
+        def np_hamming(arr):
+            hw_arr = np.zeros(np.shape(arr), dtype=np.uint8)
+            for i in range(8):
+                hw_arr += (arr & (1 << i)) >> i
+            return hw_arr
+
+        errorlist = np_hamming(diff_list)
+        set_errors = np_hamming(diff_list & self.data)
+        reset_errors = np_hamming(diff_list & ~self.data)
+            
+        # for i in range(0, test_len):
+        #     if self.data[i] != din[i]:
+
+        #         diff = self.data[i] ^ din[i]
+        #         errorlist.append(bin(diff).count('1'))
+        #         set_errors.append(bin(diff & self.data[i]).count('1'))
+        #         reset_errors.append(bin(diff & ~self.data[i]).count('1'))
+        #         if bin(diff & ~self.data[i]).count('1') > 8:
+        #             print("BULLSHIT DETECTED")
+        #         errorcnt += 1
+        #     else:
+        #         errorlist.append(0)
         #time2 = time.clock()
         #check_time = time2 - time1
 
-        total_set_errors = sum(set_errors)
-        total_reset_errors = sum(reset_errors)
+        total_set_errors = np.sum(set_errors, dtype=np.uint32)
+        total_reset_errors = np.sum(reset_errors, dtype=np.uint32)
 
         print("Byte errors: %d (of %d). Bit errors: %d set (0 --> 1), %d reset (1 --> 0)"%(errorcnt, test_len, total_set_errors, total_reset_errors))
         #print " Timing: pattern: {}, Write: {}, Read: {}, Check: {}".format(pattern_time, write_time, read_time, check_time)

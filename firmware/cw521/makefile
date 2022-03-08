@@ -38,7 +38,7 @@ SRC += main_cw521.c naeusb_ballistic.c naeusb/naeusb.c naeusb/naeusb_default.c
 SRC += naeusb/udc.c  naeusb/usb_xmem.c
 
 # -----------------------------------------------------------------------------
-OPT=3
+OPT=0
 
 PLATFORM=SAM3U4E
 

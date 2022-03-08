@@ -15,8 +15,7 @@
 
 typedef enum {
     bep_emem=0,
-    bep_fpgabitstream=10,
-    bep_fpgabitstreamspi=20
+    bep_fpgabitstream=10
 } blockep_usage_t;
 
 void ballistic_register_handlers(void);
