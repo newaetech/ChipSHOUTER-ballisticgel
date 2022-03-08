@@ -137,7 +137,7 @@ CFLAGS += -funsigned-bitfields
 # Note: -fpack-struct is dangerous! This is only included in XMEGA/AVR HAL
 #CFLAGS += -fpack-struct
 CFLAGS += -fshort-enums
-CFLAGS += -Wall
+CFLAGS += -Wall -Wno-missing-prototypes -Wno-unused-variable -Wno-pointer-sign -Wno-unused-value
 CFLAGS += -Wstrict-prototypes
 #CFLAGS += -mshort-calls
 #CFLAGS += -fno-unit-at-a-time
@@ -286,6 +286,7 @@ MSG_SIZE_AFTER = Size after:
 MSG_COFF = Converting to AVR COFF:
 MSG_EXTENDED_COFF = Converting to AVR Extended COFF:
 MSG_FLASH = Creating load file for Flash:
+MSG_BIN = Creating binary:
 MSG_EEPROM = Creating load file for EEPROM:
 MSG_EXTENDED_LISTING = Creating Extended Listing:
 MSG_SYMBOL_TABLE = Creating Symbol Table:
@@ -317,10 +318,10 @@ ALL_ASFLAGS = $(MCU_FLAGS) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: .dep begin gccversion build sizeafter end
+all: .dep begin gccversion build sizeafter copybinary end
 
 # Change the build target to build a HEX file or a library.
-build: elf hex eep lss sym
+build: elf hex eep lss sym bin
 #build: lib
 
 
@@ -329,6 +330,7 @@ hex: $(TARGET-PLAT).hex
 eep: $(TARGET-PLAT).eep
 lss: $(TARGET-PLAT).lss
 sym: $(TARGET-PLAT).sym
+bin: $(TARGET-PLAT).bin
 LIBNAME=lib$(TARGET-PLAT).a
 lib: $(LIBNAME)
 
@@ -360,6 +362,10 @@ sizeafter: build
 	@echo $(MSG_SIZE_AFTER)
 	@$(ELFSIZE)
 
+#copybinary: build
+#	@$(COPY) ChipWhisperer-Husky-SAM3U1C.elf ChipWhisperer-Husky.elf
+#	@$(COPY) ChipWhisperer-Husky-SAM3U1C.bin ../ChipWhisperer-Husky-SAM3U1C.bin
+
 $(OBJDIR):
 	mkdir $(OBJDIR)
 
@@ -370,11 +376,6 @@ $(OBJDIR):
 gccversion :
 	@$(CC) --version
 
-
-
-# Program the device.  
-program: $(TARGET-PLAT).hex $(TARGET-PLAT).eep
-	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 
 # Generate avr-gdb config/init file which does the following:
@@ -436,6 +437,10 @@ extcoff: $(TARGET-PLAT).elf
 	@echo $(MSG_FLASH) $@
 	$(OBJCOPY) -O ihex -R .eeprom -R .fuse -R .lock -R .signature $< $@
 
+%.bin: %.hex
+	@$(ECHO_BLANK)
+	@echo $(MSG_BIN) $@
+	$(OBJCOPY) --input-target=ihex --output-target=binary $< $@
 
 %.eep: %.elf
 	@$(ECHO_BLANK)
@@ -476,7 +481,7 @@ extcoff: $(TARGET-PLAT).elf
 
 
 # Compile: create object files from C source files.
-$(OBJDIR)/%.o : %.c clean_objs $(OBJDIR) .dep begin gccversion
+$(OBJDIR)/%.o : %.c $(OBJDIR) .dep begin gccversion
 	@$(ECHO_BLANK)
 	@echo $(MSG_COMPILING) $<
 	$(CC) -c $(ALL_CFLAGS) $< -o $@
@@ -484,7 +489,7 @@ $(OBJDIR)/%.o : %.c clean_objs $(OBJDIR) .dep begin gccversion
 
 
 # Compile: create object files from C++ source files.
-$(OBJDIR)/%.o : %.cpp clean_objs $(OBJDIR) .dep begin gccversion
+$(OBJDIR)/%.o : %.cpp $(OBJDIR) .dep begin gccversion
 	@$(ECHO_BLANK)
 	@echo $(MSG_COMPILING_CPP) $<
 	$(CC) -c $(ALL_CPPFLAGS) $< -o $@ 
@@ -501,7 +506,7 @@ $(OBJDIR)/%.o : %.cpp clean_objs $(OBJDIR) .dep begin gccversion
 
 
 # Assemble: create object files from assembler source files.
-$(OBJDIR)/%.o : %.S clean_objs $(OBJDIR) .dep begin gccversion
+$(OBJDIR)/%.o : %.S $(OBJDIR) .dep begin gccversion
 	@$(ECHO_BLANK)
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
@@ -562,7 +567,8 @@ clean_list :
 # Listing of phony targets.
 .PHONY : all begin finish end sizeafter gccversion \
 build elf hex eep lss sym coff extcoff \
-clean clean_list clean_print clean_objs program debug gdb-config
+clean clean_list clean_print clean_objs program debug gdb-config \
+copybinary
 
 # saveplatform: Save the platform into the file Makefile.target
 saveplatform:

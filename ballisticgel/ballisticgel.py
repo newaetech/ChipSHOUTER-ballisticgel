@@ -20,14 +20,13 @@
 #=============================================================================
 
 import random
-import numpy as np
 
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
-import srammap
-import naeusb as NAE
+from . import srammap
+from . import naeusb as NAE
 import time
 
 def packuint32(data):
@@ -59,9 +58,9 @@ class CW521(object):
 
         #Break into 1024 chunks on write - required to avoid buffer overflow!
         totalsent = 0
-        chunksize = 1000
+        chunksize = 1024
         if len(pattern) < chunksize:
-            self.usb.cmdWriteMem(0, data)
+            self.usb.cmdWriteMem(0, pattern)
             totalsent += len(pattern)
         else:
             lastendaddr = 0

@@ -34,12 +34,13 @@ TARGET = cw521
 
 # List C source files here.
 # Header files (.h) are automatically pulled in.
-SRC += main_cw521.c usb.c
+SRC += main_cw521.c naeusb_ballistic.c naeusb/naeusb.c naeusb/naeusb_default.c
+SRC += naeusb/udc.c  naeusb/usb_xmem.c
 
 # -----------------------------------------------------------------------------
 OPT=3
 
-PLATFORM=CW521
+PLATFORM=SAM3U4E
 
 FIRMWAREPATH = ../.
 include $(FIRMWAREPATH)/Makefile.inc

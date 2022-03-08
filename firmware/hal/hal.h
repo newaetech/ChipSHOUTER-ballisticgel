@@ -84,8 +84,6 @@ void platform_init(void);
 	#include "cc2538/cc2538_hal.h"
 #elif HAL_TYPE == HAL_k24f
     #include "k24f/k24f_hal.h"
-#elif HAL_TYPE == HAL_sam3u4e
-
 #else
     #error "Unsupported HAL Type"
 #endif

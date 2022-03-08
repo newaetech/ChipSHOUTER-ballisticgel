@@ -25,9 +25,12 @@
 #include "ui.h"
 #include "genclk.h"
 #include "tasks.h"
-#include "fpga_xmem.h"
 #include "usb.h"
 #include "sysclk.h"
+#include "naeusb/naeusb_default.h"
+#include "naeusb/naeusb.h"
+#include "naeusb_ballistic.h"
+#include "naeusb/usb_xmem.h"
 #include <string.h>
 
 
@@ -162,8 +165,10 @@ int main(void)
 
   // The main loop manages only the power mode
   // because the USB management is done by interrupt
+	naeusb_register_handlers();
+  ballistic_register_handlers();
   while (true) {
-    sleepmgr_enter_sleep();
+    // sleepmgr_enter_sleep();
   }
 }
 

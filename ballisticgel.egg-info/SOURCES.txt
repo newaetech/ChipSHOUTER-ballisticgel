@@ -1,0 +1,8 @@
+LICENSE.md
+README.md
+setup.py
+ballisticgel.egg-info/PKG-INFO
+ballisticgel.egg-info/SOURCES.txt
+ballisticgel.egg-info/dependency_links.txt
+ballisticgel.egg-info/requires.txt
+ballisticgel.egg-info/top_level.txt

@@ -56,7 +56,7 @@
 #define  USB_DEVICE_VENDOR_ID             0x2B3E
 #define  USB_DEVICE_PRODUCT_ID            0xC521
 #define  USB_DEVICE_MAJOR_VERSION         1
-#define  USB_DEVICE_MINOR_VERSION         0
+#define  USB_DEVICE_MINOR_VERSION         1
 #define  USB_DEVICE_POWER                 500 // Consumption on Vbus line (mA)
 #define  USB_DEVICE_ATTR                \
  (USB_CONFIG_ATTR_BUS_POWERED)
@@ -72,6 +72,11 @@ extern char usb_serial_number[33];
 #define  USB_DEVICE_PRODUCT_NAME          "Ballistic Gel CW521"
 #define  USB_DEVICE_GET_SERIAL_NAME_POINTER usb_serial_number
 #define  USB_DEVICE_GET_SERIAL_NAME_LENGTH 32
+#define USB_DEVICE_NB_INTERFACE 1
+
+#define FW_VER_MAJOR 1
+#define FW_VER_MINOR 1
+#define FW_VER_DEBUG 0
 //We get serial number from unique ID buitl into chip
 //#define  USB_DEVICE_SERIAL_NAME "1234"
 
