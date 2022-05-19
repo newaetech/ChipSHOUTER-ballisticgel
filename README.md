@@ -10,7 +10,7 @@ It uses a large SRAM chip as a target, which has a relatively simple layout. Thi
 
 The GIT repository contains the following:
 
-1) PCB gerber files (TODO)
+1) PCB source (Altium) + gerber files
 2) Firmware for the microcontroller.
 3) Python library / PC application.
 
