@@ -60,21 +60,6 @@ class CW521(object):
         totalsent = 0
         chunksize = 1024
         self.usb.cmdWriteMem(0, pattern)
-        return
-        if len(pattern) < chunksize:
-            self.usb.cmdWriteMem(0, pattern)
-            totalsent += len(pattern)
-        else:
-            lastendaddr = 0
-            for chunkstart in range(0, len(pattern), chunksize):
-                lastendaddr = (chunkstart + chunksize)
-                chunk = pattern[chunkstart:lastendaddr]
-                self.usb.cmdWriteMem(chunkstart, chunk)
-                totalsent += len(chunk)
-
-            if totalsent != len(pattern):
-                chunk = pattern[lastendaddr:]
-                self.usb.cmdWriteMem(lastendaddr, chunk)
 
     def write_seed(self, seed, addr, length):
         """Write 'length' random data to 'addr', based on 'seed', done on-board
