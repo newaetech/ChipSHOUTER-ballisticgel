@@ -287,8 +287,8 @@ class CW521(object):
             return hw_arr
 
         errorlist = np_hamming(diff_list)
-        set_errors = np_hamming(diff_list & self.data)
-        reset_errors = np_hamming(diff_list & ~self.data)
+        set_errors = np_hamming(diff_list & ~self.data)
+        reset_errors = np_hamming(diff_list & self.data)
             
         # for i in range(0, test_len):
         #     if self.data[i] != din[i]:
