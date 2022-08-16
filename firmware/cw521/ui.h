@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief User Interface
+ * \brief Common User Interface for USB vendor class application
  *
- * Copyright (c) 2012 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2011 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -41,54 +41,30 @@
  *
  */
 
-#include <asf.h>
-#include "ui.h"
-#include "tasks.h"
+#ifndef _UI_H_
+#define _UI_H_
 
-void ui_init(void)
-{
-	// Initialize LEDs
-	LED_Off(LED0_GPIO);
-	LED_Off(LED1_GPIO);
-	LED_Off(LED2_GPIO);
-}
+//! \brief Initializes the user interface
+void ui_init(void);
 
-void ui_powerdown(void)
-{
-	LED_Off(LED0_GPIO);
-	LED_Off(LED1_GPIO);
-	LED_Off(LED2_GPIO);
-	
-	// Power off FPGA
-	board_sram_pwroff();
-		
-}
+//! \brief Enters the user interface in power down mode
+void ui_powerdown(void);
 
-void ui_wakeup(void)
-{
-	LED_On(LED0_GPIO);
-	board_sram_pwron();
-}
+//! \brief Exits the user interface of power down mode
+void ui_wakeup(void);
 
-void ui_process(uint16_t framenumber)
-{
-	if ((framenumber % 1024) == 0) {
-		LED_On(LED0_GPIO);
-	}
-	if ((framenumber % 1024) == 512) {
-		LED_Off(LED0_GPIO);
-	}
-	
-	if ((framenumber % 512) == 0) {
-		LED_Off(LED1_GPIO);
-		LED_Off(LED2_GPIO);
-	}
-}
-
-/**
- * \defgroup UI User Interface
+/*! \brief Notify the state of loopback
+ * It is called when a the loopback is started and stopped.
  *
- * Human interface on SAM3U-EK:
- * - Led 0 (D2) blinks when USB host has checked and enabled vendor interface
- * - Led 1 (D3) is on when loopback is running
+ * \param b_started    loopback started if true, else stopped
  */
+void ui_loop_back_state(bool b_started);
+
+/*! \brief This process is called each 1ms
+ * It is called only if the USB interface is enabled.
+ *
+ * \param framenumber  Current frame number
+ */
+void ui_process(uint16_t framenumber);
+
+#endif // _UI_H_

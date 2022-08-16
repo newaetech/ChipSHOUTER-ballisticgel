@@ -24,10 +24,37 @@ import random
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
+from .ChipWhispererSAM3Update import SAMFWLoader, get_at91_ports
 
 from . import srammap
 from . import naeusb as NAE
 import time
+from typing import Optional, Type, Union
+
+def program_sam_firmware(serial_port : Optional[str]=None,
+    hardware_type : Optional[str]=None, fw_path : Optional[str]=None):
+    """Program firmware onto an erased chipwhisperer scope or target
+
+    See https://chipwhisperer.readthedocs.io/en/latest/firmware.html for more information
+
+    .. versionadded:: 5.6.1
+        Improved programming interface
+    """
+    if (hardware_type, fw_path) == (None, None):
+        raise ValueError("Must specify hardware_type or fw_path, see https://chipwhisperer.readthedocs.io/en/latest/firmware.html")
+
+    if serial_port is None:
+        at91_ports = get_at91_ports()
+        if len(at91_ports) == 0:
+            raise OSError("Could not find bootloader serial port, please see https://chipwhisperer.readthedocs.io/en/latest/firmware.html")
+        if len(at91_ports) > 1:
+            raise OSError("Found multiple bootloaders, please specify com port. See https://chipwhisperer.readthedocs.io/en/latest/firmware.html")
+
+        serial_port = at91_ports[0]
+        print("Found {}".format(serial_port))
+    prog = SAMFWLoader(None)
+    prog.program(serial_port, hardware_type=hardware_type, fw_path=fw_path)
+
 
 def packuint32(data):
     """Converts a 32-bit integer into format expected by USB firmware"""
@@ -42,6 +69,13 @@ class CW521(object):
     REQ_MEMREAD_RNG_BULK = 0x18
 
     sram_len = 4194304
+    _hw_type = "cw521"
+
+    def _getNAEUSB(self):
+        return self.usb
+
+    def _getCWType(self):
+        return "cw521"
 
     def con(self, usb_vid=0x2B3E, usb_pid=0xC521):
         """Connect to the Ballistic Gel, use default VID/PID"""
@@ -49,6 +83,9 @@ class CW521(object):
         self.usb = NAE.NAEUSB()
         self.usb.con(idProduct=[usb_pid])
 
+    def upgrade_firmware(self):
+        prog = SAMFWLoader(self)
+        prog.auto_program()
 
     def write_pattern(self, pattern):
         """Download an arbitrary pattern to the entire SRAM"""
@@ -198,7 +235,8 @@ class CW521(object):
                         errdatax.append(x)
                         errdatay.append(ybitarray[bnum])
 
-        return {'errorlist':errorlist, 'errdatax':errdatax, 'errdatay':errdatay}
+        return {'errorlist':np.array(errorlist, dtype=np.uint8), 'errdatax':np.array(errdatax, dtype=np.uint8), 
+                'errdatay':np.array(errdatay, dtype=np.uint8)}
 
     def raw_test_setup(self):
         """Download a raw pattern to the SRAM, slower than the seed method but

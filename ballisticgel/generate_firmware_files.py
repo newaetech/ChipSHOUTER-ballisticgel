@@ -11,7 +11,7 @@ hwdir = r"../firmware"
 
 ballistic_v = [1, 1]
 ballistic_files = [
-                ("phywhisperer-SAM3U1C.bin", os.path.join(hwdir, r"cw521/cw521-SAM3U4E.bin"))]
+                ("cw521.bin", os.path.join(hwdir, r"cw521/cw521.bin"))]
 
 
 file_list = [
