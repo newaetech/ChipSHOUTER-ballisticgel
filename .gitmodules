@@ -1,0 +1,3 @@
+[submodule "firmware/cw521/naeusb"]
+	path = firmware/cw521/naeusb
+	url = https://github.com/newaetech/naeusb.git

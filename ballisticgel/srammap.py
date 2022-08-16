@@ -202,7 +202,7 @@ def test():
     with open("error_location.bin", "rb") as errfile:
         data = bytearray(errfile.read())
 
-    sram = sram_mapping()
+    sram = SRAMMapping()
 
     import numpy as np
     import matplotlib.mlab as mlab

@@ -1,0 +1,6 @@
+make.exe --dry-run --keep-going --print-directory
+make.exe: Entering directory 'c:/Users/adewa/code/ChipSHOUTER-ballisticgel'
+make.exe: Leaving directory 'c:/Users/adewa/code/ChipSHOUTER-ballisticgel'
+ 
+make.exe: *** No targets specified and no makefile found.  Stop.
+

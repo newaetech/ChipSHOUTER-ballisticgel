@@ -20,15 +20,41 @@
 #=============================================================================
 
 import random
-import numpy as np
 
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
+from .ChipWhispererSAM3Update import SAMFWLoader, get_at91_ports
 
-import srammap
-import naeusb as NAE
+from . import srammap
+from . import naeusb as NAE
 import time
+from typing import Optional, Type, Union
+
+def program_sam_firmware(serial_port : Optional[str]=None,
+    hardware_type : Optional[str]=None, fw_path : Optional[str]=None):
+    """Program firmware onto an erased chipwhisperer scope or target
+
+    See https://chipwhisperer.readthedocs.io/en/latest/firmware.html for more information
+
+    .. versionadded:: 5.6.1
+        Improved programming interface
+    """
+    if (hardware_type, fw_path) == (None, None):
+        raise ValueError("Must specify hardware_type or fw_path, see https://chipwhisperer.readthedocs.io/en/latest/firmware.html")
+
+    if serial_port is None:
+        at91_ports = get_at91_ports()
+        if len(at91_ports) == 0:
+            raise OSError("Could not find bootloader serial port, please see https://chipwhisperer.readthedocs.io/en/latest/firmware.html")
+        if len(at91_ports) > 1:
+            raise OSError("Found multiple bootloaders, please specify com port. See https://chipwhisperer.readthedocs.io/en/latest/firmware.html")
+
+        serial_port = at91_ports[0]
+        print("Found {}".format(serial_port))
+    prog = SAMFWLoader(None)
+    prog.program(serial_port, hardware_type=hardware_type, fw_path=fw_path)
+
 
 def packuint32(data):
     """Converts a 32-bit integer into format expected by USB firmware"""
@@ -43,6 +69,13 @@ class CW521(object):
     REQ_MEMREAD_RNG_BULK = 0x18
 
     sram_len = 4194304
+    _hw_type = "cw521"
+
+    def _getNAEUSB(self):
+        return self.usb
+
+    def _getCWType(self):
+        return "cw521"
 
     def con(self, usb_vid=0x2B3E, usb_pid=0xC521):
         """Connect to the Ballistic Gel, use default VID/PID"""
@@ -50,6 +83,9 @@ class CW521(object):
         self.usb = NAE.NAEUSB()
         self.usb.con(idProduct=[usb_pid])
 
+    def upgrade_firmware(self):
+        prog = SAMFWLoader(self)
+        prog.auto_program()
 
     def write_pattern(self, pattern):
         """Download an arbitrary pattern to the entire SRAM"""
@@ -59,21 +95,8 @@ class CW521(object):
 
         #Break into 1024 chunks on write - required to avoid buffer overflow!
         totalsent = 0
-        chunksize = 1000
-        if len(pattern) < chunksize:
-            self.usb.cmdWriteMem(0, data)
-            totalsent += len(pattern)
-        else:
-            lastendaddr = 0
-            for chunkstart in range(0, len(pattern), chunksize):
-                lastendaddr = (chunkstart + chunksize)
-                chunk = pattern[chunkstart:lastendaddr]
-                self.usb.cmdWriteMem(chunkstart, chunk)
-                totalsent += len(chunk)
-
-            if totalsent != len(pattern):
-                chunk = pattern[lastendaddr:]
-                self.usb.cmdWriteMem(lastendaddr, chunk)
+        chunksize = 1024
+        self.usb.cmdWriteMem(0, pattern)
 
     def write_seed(self, seed, addr, length):
         """Write 'length' random data to 'addr', based on 'seed', done on-board
@@ -133,7 +156,7 @@ class CW521(object):
         self.usb.close()
 
 
-    def get_xor_sram(sram_len):
+    def get_xor_sram(self, sram_len):
         data = np.random.randint(0, 256, sram_len)
         print("Generating xor")
         for i in range(sram_len / 4):
@@ -212,7 +235,8 @@ class CW521(object):
                         errdatax.append(x)
                         errdatay.append(ybitarray[bnum])
 
-        return {'errorlist':errorlist, 'errdatax':errdatax, 'errdatay':errdatay}
+        return {'errorlist':np.array(errorlist, dtype=np.uint8), 'errdatax':np.array(errdatax, dtype=np.uint8), 
+                'errdatay':np.array(errdatay, dtype=np.uint8)}
 
     def raw_test_setup(self):
         """Download a raw pattern to the SRAM, slower than the seed method but
@@ -223,7 +247,7 @@ class CW521(object):
         #print "Generating test vector %d bytes"%self.sram_len
 
         #time1 = time.clock()
-        self.data = np.random.randint(0, 256, self.sram_len)
+        self.data = np.random.randint(0, 256, self.sram_len, dtype=np.uint8)
         #time2 = time.clock()
         #pattern_time = time2 - time1
 
@@ -241,6 +265,7 @@ class CW521(object):
 
         #time1 = time.clock()
         din = self.read_pattern()
+        din = np.array(din, dtype=np.uint8)
         #time2 = time.clock()
         #read_time = time2 - time1
 
@@ -253,22 +278,35 @@ class CW521(object):
         test_len = self.sram_len
 
         #time1 = time.clock()
-        for i in range(0, test_len):
-            if self.data[i] != din[i]:
-                diff = self.data[i] ^ din[i]
-                errorlist.append(bin(diff).count('1'))
-                set_errors.append(bin(diff & self.data[i]).count('1'))
-                reset_errors.append(bin(diff & ~self.data[i]).count('1'))
-                if bin(diff & ~self.data[i]).count('1') > 8:
-                    print("BULLSHIT DETECTED")
-                errorcnt += 1
-            else:
-                errorlist.append(0)
+        diff_list = self.data ^ din
+
+        def np_hamming(arr):
+            hw_arr = np.zeros(np.shape(arr), dtype=np.uint8)
+            for i in range(8):
+                hw_arr += (arr & (1 << i)) >> i
+            return hw_arr
+
+        errorlist = np_hamming(diff_list)
+        set_errors = np_hamming(diff_list & self.data)
+        reset_errors = np_hamming(diff_list & ~self.data)
+            
+        # for i in range(0, test_len):
+        #     if self.data[i] != din[i]:
+
+        #         diff = self.data[i] ^ din[i]
+        #         errorlist.append(bin(diff).count('1'))
+        #         set_errors.append(bin(diff & self.data[i]).count('1'))
+        #         reset_errors.append(bin(diff & ~self.data[i]).count('1'))
+        #         if bin(diff & ~self.data[i]).count('1') > 8:
+        #             print("BULLSHIT DETECTED")
+        #         errorcnt += 1
+        #     else:
+        #         errorlist.append(0)
         #time2 = time.clock()
         #check_time = time2 - time1
 
-        total_set_errors = sum(set_errors)
-        total_reset_errors = sum(reset_errors)
+        total_set_errors = np.sum(set_errors, dtype=np.uint32)
+        total_reset_errors = np.sum(reset_errors, dtype=np.uint32)
 
         print("Byte errors: %d (of %d). Bit errors: %d set (0 --> 1), %d reset (1 --> 0)"%(errorcnt, test_len, total_set_errors, total_reset_errors))
         #print " Timing: pattern: {}, Write: {}, Read: {}, Check: {}".format(pattern_time, write_time, read_time, check_time)
