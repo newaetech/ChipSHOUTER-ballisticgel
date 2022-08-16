@@ -9,7 +9,7 @@ import binascii
 hwdir = r"../firmware"
 
 
-ballistic_v = [1, 1]
+ballistic_v = [2, 0]
 ballistic_files = [
                 ("cw521.bin", os.path.join(hwdir, r"cw521/cw521.bin"))]
 

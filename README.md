@@ -34,7 +34,7 @@ An example of using the file is given at the end of ballisticgel.py, see the fol
     savefile = None
     #savefile = 'error_locations.bin' 
     
-    #Raw method is slower but more flexible
+    #Raw method recommended - same speed and more flexible
     use_raw_method = True
 
     while True:
@@ -67,14 +67,6 @@ An example of using the file is given at the end of ballisticgel.py, see the fol
 
 The "graph" that pops up afterwards is slightly bogus - the physical map of the SRAM is not yet accurate. But the most interesting aspect is that you can see number of bit flips (positive/negative), and total number of bytes corrupted.
 
-You can switch to the faster method as well which does not provide bit corruption information. But it provides total corruption size which is often of great interest.
-
-Ballistic Gel relies on ChipWhisperer being installed, as the USB routines are imported from ChipWhisperer. You can install it with
-
-	pip install chipwhisperer
-
-If you do not have it.
-
 ### Result Format ###
 
 The result information is provided in a dictionary. Depending if you use the fast (but less detailed) method or the slow (but more detailed) method you may not have all of these fields. It currently provides you with this:
@@ -84,12 +76,30 @@ The result information is provided in a dictionary. Depending if you use the fas
  - 'set_errors': Number of bit-set errors that occurred. Note number of bit errors is different from number of byte errors.
  - 'reset_errors': Number of bit-reset errors that occurred. Note number of bit errors is different from number of byte errors.
 
-
-
-
 ## Building Firmware ##
 
-The firmware is built using Atmel Studio 7, but could also be built on Linux using an ARM toolchain.
+The firmware uses the ChipWhisperer capture build system (naeusb). Navigate to
+`firmware/cw521` and run `git submodule update --init naeusb`. Once this has completed,
+run `make`.
+
+The firmware build requires `make` and `arm-none-eabi-gcc`.
+
+## Drivers ##
+
+As of commit f62ccdf0ea2d611deabf48ec3ad5db759205dbb0 and firmware version 2.0.0, 
+the CW521 now uses the same WCID driver assignment as ChipWhisperer devices,
+meaning no custom drivers need to be installed.
+
+If you have old firmware/drivers and want to update, instructions
+can be adapted from [ChipWhisperer's documentation on the subject](https://chipwhisperer.readthedocs.io/en/latest/drivers.html)
+
+Note that the same `upgrade_firmware()` method is now available on the CW521 object:
+
+```python
+from ballisticgel import CW521
+cw521 = CW521()
+cw521.upgrade_firmware()
+```
 
 ## Legal ##
 
